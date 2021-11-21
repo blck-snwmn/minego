@@ -178,10 +178,13 @@ func (g *Game) openAdjacentCells(h, w int) {
 		}
 
 		targetCell := g.cells[h][w]
-		if targetCell.isOpen || targetCell.hasBomb || g.hasAdjacentBomb(h, w) {
+		if targetCell.isOpen || targetCell.hasBomb {
 			continue
 		}
 		g.open(h, w)
+		if g.hasAdjacentBomb(h, w) {
+			continue
+		}
 		g.openAdjacentCells(h, w)
 	}
 }

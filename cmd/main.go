@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/blck-snwmn/minego"
 )
 
 func main() {
-	w, h := 10, 15
-	bobNum := 5
-	game := minego.NewGame(h, w, bobNum)
+	var h, w, bombNum int
+	fmt.Scan(&h, &w, &bombNum)
+	game := minego.NewGame(h, w, bombNum, os.Stdout)
 
 	var ih, iw int
 

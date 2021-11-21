@@ -1,8 +1,10 @@
 package minego
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -77,7 +79,7 @@ func (c cell) String() string {
 // NewGame は minesweeper の ゲームを生成します
 // - Vertical    cell's size is h (index is 0~h-1)
 // - Horizontal  cell's size is w (index is 0~w-1)
-func NewGame(h, w, bobNum int) Game {
+func NewGame(h, w, bobNum int, writter io.Writer) Game {
 	// generate cells
 	cells := make([][]cell, h)
 	for i := 0; i < len(cells); i++ {
@@ -89,6 +91,7 @@ func NewGame(h, w, bobNum int) Game {
 		cells:         cells,
 		closedCellNum: h * w,
 		bombNum:       bobNum,
+		writer:        bufio.NewWriter(writter),
 	}
 	g.setBomb(h, w, bobNum)
 	return g
@@ -101,6 +104,8 @@ type Game struct {
 	cells         [][]cell
 	closedCellNum int
 	bombNum       int
+
+	writer *bufio.Writer
 }
 
 // Show show current game state
@@ -108,24 +113,29 @@ func (g *Game) Show() {
 	// TODO buffering
 	headerCellLen := len(g.cells[0])
 	sep := strings.Repeat("=", (headerCellLen+1)*3)
-	fmt.Println(sep)
+	g.writer.WriteString(sep)
+	g.writer.WriteString("\n")
+	// fmt.Println(sep)
 
 	// header
-	fmt.Print("   ")
+	g.writer.WriteString("   ")
 	for i := 0; i < headerCellLen; i++ {
-		fmt.Printf(" %02d", i)
+		g.writer.WriteString(fmt.Sprintf(" %02d", i))
 	}
 
 	// rows
-	fmt.Println()
+	g.writer.WriteString("\n")
 	for i, chs := range g.cells {
-		fmt.Printf(" %02d", i)
+		g.writer.WriteString(fmt.Sprintf(" %02d", i))
 		for _, c := range chs {
-			fmt.Printf("%3s", c)
+			g.writer.WriteString(fmt.Sprintf("%3s", c))
 		}
-		fmt.Println()
+		g.writer.WriteString("\n")
 	}
-	fmt.Println(sep)
+
+	g.writer.WriteString(sep)
+	g.writer.WriteString("\n")
+	g.writer.Flush()
 }
 
 // OpenCell open specified Game's cell

@@ -98,6 +98,7 @@ type Game struct {
 
 // Show show current game state
 func (g *Game) Show() {
+	// TODO buffering
 	fmt.Println("==================")
 	fmt.Print("   ")
 	for i := 0; i < len(g.cells); i++ {

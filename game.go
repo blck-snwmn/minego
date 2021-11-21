@@ -48,6 +48,8 @@ const (
 	bottomRight
 )
 
+var directions = []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight}
+
 type cell struct {
 	hasBomb bool
 	isOpen  bool
@@ -149,7 +151,7 @@ func (g *Game) setBomb(sizeH, sizeW, bobNum int) {
 }
 
 func (g *Game) incrementBomb(h, w int) {
-	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
+	for _, d := range directions {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo
@@ -179,7 +181,7 @@ func (g *Game) openAdjacentCells(h, w int) {
 	if g.hasAdjacentBomb(h, w) {
 		return
 	}
-	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
+	for _, d := range directions {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo

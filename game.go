@@ -112,6 +112,7 @@ type Game struct {
 	cells     [][]cell
 }
 
+// Show show current game state
 func (g *Game) Show() {
 	fmt.Println("=========")
 	for _, chs := range g.cells {

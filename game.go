@@ -83,9 +83,11 @@ func NewGame(h, w, bobNum int) Game {
 		cells[i] = make([]cell, w)
 	}
 	g := Game{
-		maxHIndex: h - 1,
-		maxWIndex: w - 1,
-		cells:     cells,
+		maxHIndex:     h - 1,
+		maxWIndex:     w - 1,
+		cells:         cells,
+		closedCellNum: h * w,
+		bombNum:       bobNum,
 	}
 	g.setBomb(h, w, bobNum)
 	return g
@@ -93,9 +95,11 @@ func NewGame(h, w, bobNum int) Game {
 
 // Game は minesweeper のゲームを表します
 type Game struct {
-	maxHIndex int
-	maxWIndex int
-	cells     [][]cell
+	maxHIndex     int
+	maxWIndex     int
+	cells         [][]cell
+	closedCellNum int
+	bombNum       int
 }
 
 // Show show current game state
@@ -127,11 +131,18 @@ func (g *Game) OpenCell(h, w int) (bool, error) {
 		return false, nil
 	}
 	if c.hasBomb {
+		g.open(h, w)
 		return true, nil
 	}
 	g.openAdjacentCells(h, w)
 
 	return false, nil
+}
+
+// Ends returns whether the game is end
+// if return true, game is end
+func (g *Game) Ends() bool {
+	return g.closedCellNum == g.bombNum
 }
 
 func (g *Game) setBomb(sizeH, sizeW, bobNum int) {
@@ -169,6 +180,7 @@ func (g *Game) open(h, w int) {
 	c := g.cells[h][w]
 	c.open()
 	g.cells[h][w] = c
+	g.closedCellNum--
 }
 
 func (g *Game) hasAdjacentBomb(h, w int) bool {

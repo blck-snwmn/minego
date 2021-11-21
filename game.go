@@ -179,7 +179,7 @@ func (g *Game) openAdjacentCells(h, w int) {
 	if g.hasAdjacentBomb(h, w) {
 		return
 	}
-	for _, d := range []direction{nop, top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
+	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo

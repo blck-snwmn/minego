@@ -60,10 +60,10 @@ func (c *cell) open() {
 
 func (c cell) String() string {
 	switch {
-	case c.isOpen && c.bomb > 0:
-		return strconv.Itoa(c.bomb)
 	case c.isOpen && c.hasBomb:
 		return "x"
+	case c.isOpen && c.bomb > 0:
+		return strconv.Itoa(c.bomb)
 	case c.isOpen:
 		return "□"
 	default:

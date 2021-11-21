@@ -98,14 +98,20 @@ type Game struct {
 
 // Show show current game state
 func (g *Game) Show() {
-	fmt.Println("=========")
-	for _, chs := range g.cells {
+	fmt.Println("==================")
+	fmt.Print("   ")
+	for i := 0; i < len(g.cells); i++ {
+		fmt.Printf(" %02d", i)
+	}
+	fmt.Println()
+	for i, chs := range g.cells {
+		fmt.Printf(" %02d", i)
 		for _, c := range chs {
-			fmt.Print(c)
+			fmt.Printf("%3s", c)
 		}
 		fmt.Println()
 	}
-	fmt.Println("=========")
+	fmt.Println("==================")
 }
 
 // OpenCell open specified Game's cell

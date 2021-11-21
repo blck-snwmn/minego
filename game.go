@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -50,10 +51,24 @@ const (
 type cell struct {
 	hasBomb bool
 	isOpen  bool
+	bomb    int
 }
 
 func (c *cell) open() {
 	c.isOpen = true
+}
+
+func (c cell) String() string {
+	switch {
+	case c.isOpen && c.bomb > 0:
+		return strconv.Itoa(c.bomb)
+	case c.isOpen && c.hasBomb:
+		return "x"
+	case c.isOpen:
+		return "□"
+	default:
+		return "■"
+	}
 }
 
 // NewGame は minesweeper の ゲームを生成します
@@ -101,16 +116,7 @@ func (g *Game) Show() {
 	fmt.Println("=========")
 	for _, chs := range g.cells {
 		for _, c := range chs {
-			var s string
-			switch {
-			case c.isOpen:
-				s = "□"
-			case c.isOpen && c.hasBomb:
-				s = "X"
-			default:
-				s = "■"
-			}
-			fmt.Print(s)
+			fmt.Print(c)
 		}
 		fmt.Println()
 	}

@@ -80,29 +80,13 @@ func NewGame(h, w, bobNum int) Game {
 	for i := 0; i < len(cells); i++ {
 		cells[i] = make([]cell, w)
 	}
-
-	// set bomb
-	rand.Seed(time.Now().UnixNano())
-	// FIXME: loop never ends if  w*h < bomb
-	setNum := 0
-	for {
-		if setNum == bobNum {
-			break
-		}
-
-		wb := rand.Intn(w)
-		hb := rand.Intn(h)
-		if cells[hb][wb].hasBomb {
-			continue
-		}
-		cells[hb][wb].hasBomb = true
-		setNum++
-	}
-	return Game{
+	g := Game{
 		maxHIndex: h - 1,
 		maxWIndex: w - 1,
 		cells:     cells,
 	}
+	g.setBomb(h, w, bobNum)
+	return g
 }
 
 // Game は minesweeper のゲームを表します
@@ -140,6 +124,40 @@ func (g *Game) OpenCell(h, w int) (bool, error) {
 	g.openAdjacentCells(h, w)
 
 	return false, nil
+}
+
+func (g *Game) setBomb(sizeH, sizeW, bobNum int) {
+	// set bomb
+	rand.Seed(time.Now().UnixNano())
+	// FIXME: loop never ends if  w*h < bomb
+	setNum := 0
+	for {
+		if setNum == bobNum {
+			break
+		}
+
+		hb := rand.Intn(sizeH)
+		wb := rand.Intn(sizeW)
+		if g.cells[hb][wb].hasBomb {
+			continue
+		}
+		g.cells[hb][wb].hasBomb = true
+		g.incrementBomb(hb, wb)
+		setNum++
+	}
+}
+
+func (g *Game) incrementBomb(h, w int) {
+	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
+		ho, wo := d.offset()
+		h := h + ho
+		w := w + wo
+		if h < 0 || w < 0 || g.maxHIndex < h || g.maxWIndex < w {
+			continue
+		}
+
+		g.cells[h][w].bomb++
+	}
 }
 
 func (g *Game) hasBomb(h, w int) bool { return g.cells[h][w].hasBomb }

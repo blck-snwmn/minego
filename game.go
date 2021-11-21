@@ -170,20 +170,7 @@ func (g *Game) open(h, w int) {
 }
 
 func (g *Game) hasAdjacentBomb(h, w int) bool {
-	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
-		ho, wo := d.offset()
-		h := h + ho
-		w := w + wo
-		if !g.isInGameArea(h, w) {
-			continue
-		}
-
-		adjacentCell := g.cells[h][w]
-		if adjacentCell.hasBomb {
-			return true
-		}
-	}
-	return false
+	return g.cells[h][w].bomb > 0
 }
 
 // openAdjacentCells open adjacent cells starting from (h, w)

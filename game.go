@@ -124,13 +124,10 @@ func (g *Game) OpenCell(h, w int) (bool, error) {
 	if c.isOpen {
 		return false, nil
 	}
-	g.open(h, w)
 	if c.hasBomb {
 		return true, nil
 	}
-	if !g.hasAdjacentBomb(h, w) {
-		g.openAdjacentCells(h, w)
-	}
+	g.openAdjacentCells(h, w)
 
 	return false, nil
 }
@@ -191,7 +188,11 @@ func (g *Game) hasAdjacentBomb(h, w int) bool {
 
 // openAdjacentCells open adjacent cells starting from (h, w)
 func (g *Game) openAdjacentCells(h, w int) {
-	for _, d := range []direction{top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
+	g.open(h, w)
+	if g.hasAdjacentBomb(h, w) {
+		return
+	}
+	for _, d := range []direction{nop, top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight} {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo
@@ -201,10 +202,6 @@ func (g *Game) openAdjacentCells(h, w int) {
 
 		targetCell := g.cells[h][w]
 		if targetCell.isOpen || targetCell.hasBomb {
-			continue
-		}
-		g.open(h, w)
-		if g.hasAdjacentBomb(h, w) {
 			continue
 		}
 		g.openAdjacentCells(h, w)

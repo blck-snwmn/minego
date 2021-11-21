@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -105,11 +106,17 @@ type Game struct {
 // Show show current game state
 func (g *Game) Show() {
 	// TODO buffering
-	fmt.Println("==================")
+	headerCellLen := len(g.cells[0])
+	sep := strings.Repeat("=", (headerCellLen+1)*3)
+	fmt.Println(sep)
+
+	// header
 	fmt.Print("   ")
-	for i := 0; i < len(g.cells[0]); i++ {
+	for i := 0; i < headerCellLen; i++ {
 		fmt.Printf(" %02d", i)
 	}
+
+	// rows
 	fmt.Println()
 	for i, chs := range g.cells {
 		fmt.Printf(" %02d", i)
@@ -118,7 +125,7 @@ func (g *Game) Show() {
 		}
 		fmt.Println()
 	}
-	fmt.Println("==================")
+	fmt.Println(sep)
 }
 
 // OpenCell open specified Game's cell

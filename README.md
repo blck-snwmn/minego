@@ -1,0 +1,2 @@
+# minego
+minesweeper by Go

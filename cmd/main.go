@@ -7,14 +7,14 @@ import (
 )
 
 func main() {
-	w, h := 5, 6
+	w, h := 10, 15
 	bobNum := 5
 	game := minego.NewGame(h, w, bobNum)
 
 	var ih, iw int
 
+	game.Show()
 	for {
-		game.Show()
 		if _, err := fmt.Scan(&ih); err != nil {
 			fmt.Println(err)
 			return
@@ -29,8 +29,13 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
+		game.Show()
 		if exploded {
 			fmt.Println("bomb is exploded. game over.")
+			return
+		}
+		if game.Ends() {
+			fmt.Println("you win")
 			return
 		}
 	}

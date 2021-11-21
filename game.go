@@ -110,7 +110,7 @@ func (g *Game) Show() {
 
 // OpenCell open specified Game's cell
 func (g *Game) OpenCell(h, w int) (bool, error) {
-	if h < 0 || w < 0 || g.maxHIndex < h || g.maxWIndex < w {
+	if !g.isInGameArea(h, w) {
 		return false, errors.New("failed open: out of size")
 	}
 	c := g.cells[h][w]
@@ -130,12 +130,7 @@ func (g *Game) setBomb(sizeH, sizeW, bobNum int) {
 	// set bomb
 	rand.Seed(time.Now().UnixNano())
 	// FIXME: loop never ends if  w*h < bomb
-	setNum := 0
-	for {
-		if setNum == bobNum {
-			break
-		}
-
+	for setNum := 0; setNum != bobNum; {
 		hb := rand.Intn(sizeH)
 		wb := rand.Intn(sizeW)
 		if g.cells[hb][wb].hasBomb {
@@ -152,7 +147,7 @@ func (g *Game) incrementBomb(h, w int) {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo
-		if h < 0 || w < 0 || g.maxHIndex < h || g.maxWIndex < w {
+		if !g.isInGameArea(h, w) {
 			continue
 		}
 
@@ -173,7 +168,7 @@ func (g *Game) hasAdjacentBomb(h, w int) bool {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo
-		if h < 0 || w < 0 || g.maxHIndex < h || g.maxWIndex < w {
+		if !g.isInGameArea(h, w) {
 			continue
 		}
 
@@ -191,7 +186,7 @@ func (g *Game) openAdjacentCells(h, w int) {
 		ho, wo := d.offset()
 		h := h + ho
 		w := w + wo
-		if h < 0 || w < 0 || g.maxHIndex < h || g.maxWIndex < w {
+		if !g.isInGameArea(h, w) {
 			continue
 		}
 
@@ -205,4 +200,8 @@ func (g *Game) openAdjacentCells(h, w int) {
 		}
 		g.openAdjacentCells(h, w)
 	}
+}
+
+func (g *Game) isInGameArea(h, w int) bool {
+	return h >= 0 && w >= 0 && h <= g.maxHIndex && w <= g.maxWIndex
 }

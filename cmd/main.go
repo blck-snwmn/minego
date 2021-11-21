@@ -27,7 +27,7 @@ func main() {
 		exploded, err := game.OpenCell(ih, iw)
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if exploded {
 			fmt.Println("bomb is exploded. game over.")

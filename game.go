@@ -133,8 +133,7 @@ func (g *Game) OpenCell(h, w int) (bool, error) {
 	if c.isOpen {
 		return false, nil
 	}
-	c.open()
-	// TODO 爆発判定の仕方検討
+	g.open(h, w)
 	if c.hasBomb {
 		return true, nil
 	}

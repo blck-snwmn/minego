@@ -107,7 +107,7 @@ func (g *Game) Show() {
 	// TODO buffering
 	fmt.Println("==================")
 	fmt.Print("   ")
-	for i := 0; i < len(g.cells)-1; i++ {
+	for i := 0; i < len(g.cells[0]); i++ {
 		fmt.Printf(" %02d", i)
 	}
 	fmt.Println()

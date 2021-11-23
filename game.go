@@ -86,8 +86,6 @@ func NewGame(h, w, bobNum int, writter io.Writer) Game {
 		cells[i] = make([]cell, w)
 	}
 	g := Game{
-		maxHIndex:     h - 1,
-		maxWIndex:     w - 1,
 		cells:         cells,
 		closedCellNum: h * w,
 		bombNum:       bobNum,
@@ -99,8 +97,6 @@ func NewGame(h, w, bobNum int, writter io.Writer) Game {
 
 // Game は minesweeper のゲームを表します
 type Game struct {
-	maxHIndex     int
-	maxWIndex     int
 	cells         [][]cell
 	closedCellNum int
 	bombNum       int
@@ -227,5 +223,5 @@ func (g *Game) openAdjacentCells(h, w int) {
 }
 
 func (g *Game) isInGameArea(h, w int) bool {
-	return h >= 0 && w >= 0 && h <= g.maxHIndex && w <= g.maxWIndex
+	return h >= 0 && w >= 0 && h < len(g.cells) && w < len(g.cells[0])
 }

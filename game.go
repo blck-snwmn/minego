@@ -55,6 +55,7 @@ var directions = []direction{top, topLeft, left, bottomLeft, bottom, bottomRight
 
 type cell struct {
 	hasBomb bool
+	hasFlag bool
 	isOpen  bool
 	bomb    int
 }
@@ -63,9 +64,22 @@ func (c *cell) open() {
 	c.isOpen = true
 }
 
+func (c *cell) setFlag() {
+	c.hasFlag = true
+}
+
+func (c *cell) removeFlag() {
+	c.hasFlag = false
+}
+
 func (c cell) String() string {
 	if !c.isOpen {
-		return "■"
+		switch {
+		case c.hasFlag:
+			return "F"
+		default:
+			return "■"
+		}
 	}
 	switch {
 	case c.hasBomb:
@@ -75,6 +89,39 @@ func (c cell) String() string {
 	default:
 		return "□"
 	}
+}
+
+// CommandType is command type
+type commandType string
+
+const (
+	open       commandType = "o"
+	flagSet    commandType = "fs"
+	flagRemove commandType = "fr"
+)
+
+func (ct commandType) isValid() bool {
+	switch ct {
+	case open, flagSet, flagRemove:
+		return true
+	default:
+		return false
+	}
+}
+
+// NewCommand generate Command
+func NewCommand(t string, h, w int) (Command, error) {
+	ct := commandType(t)
+	if ct.isValid() {
+		return Command{ct, h, w}, nil
+	}
+	return Command{}, errors.New("no exist command type")
+}
+
+// Command is command of minesweeper
+type Command struct {
+	typ  commandType
+	h, w int
 }
 
 // NewGame は minesweeper の ゲームを生成します
@@ -100,6 +147,7 @@ func NewGame(h, w, bobNum int, writter io.Writer) Game {
 type Game struct {
 	cells         [][]cell
 	closedCellNum int
+	setFlagNum    int
 	bombNum       int
 
 	writer *bufio.Writer
@@ -135,11 +183,24 @@ func (g *Game) Show() {
 	g.writer.Flush()
 }
 
-// OpenCell open specified Game's cell
-func (g *Game) OpenCell(h, w int) (bool, error) {
-	if !g.isInGameArea(h, w) {
+// Do は minesweeper を １サイクルすすめる
+func (g *Game) Do(c Command) (bool, error) {
+	if !g.isInGameArea(c.h, c.w) {
 		return false, errors.New("failed open: out of size")
 	}
+	switch c.typ {
+	case open:
+		return g.OpenCell(c.h, c.w)
+	case flagSet:
+		g.setFlag(c.h, c.w)
+	case flagRemove:
+		g.removeFlag(c.h, c.w)
+	}
+	return false, nil
+}
+
+// OpenCell open specified Game's cell
+func (g *Game) OpenCell(h, w int) (bool, error) {
 	c := g.cells[h][w]
 	if c.isOpen {
 		return false, nil
@@ -156,6 +217,9 @@ func (g *Game) OpenCell(h, w int) (bool, error) {
 // Ends returns whether the game is end
 // if return true, game is end
 func (g *Game) Ends() bool {
+	fmt.Printf("closed cell=%d\n", g.closedCellNum)
+	fmt.Printf("bomb=%d\n", g.bombNum)
+	fmt.Printf("flag=%d\n", g.setFlagNum)
 	return g.closedCellNum == g.bombNum
 }
 
@@ -225,4 +289,22 @@ func (g *Game) openAdjacentCells(h, w int) {
 
 func (g *Game) isInGameArea(h, w int) bool {
 	return h >= 0 && w >= 0 && h < len(g.cells) && w < len(g.cells[0])
+}
+
+func (g *Game) setFlag(h, w int) {
+	c := g.cells[h][w]
+	c.setFlag()
+	g.cells[h][w] = c
+	if c.hasBomb {
+		g.setFlagNum++
+	}
+}
+
+func (g *Game) removeFlag(h, w int) {
+	c := g.cells[h][w]
+	c.removeFlag()
+	g.cells[h][w] = c
+	if c.hasBomb {
+		g.setFlagNum--
+	}
 }

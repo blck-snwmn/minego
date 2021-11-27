@@ -190,7 +190,7 @@ func (g *Game) Do(c Command) (bool, error) {
 	}
 	switch c.typ {
 	case open:
-		return g.OpenCell(c.h, c.w)
+		return g.openCell(c.h, c.w)
 	case flagSet:
 		g.setFlag(c.h, c.w)
 	case flagRemove:
@@ -199,8 +199,8 @@ func (g *Game) Do(c Command) (bool, error) {
 	return false, nil
 }
 
-// OpenCell open specified Game's cell
-func (g *Game) OpenCell(h, w int) (bool, error) {
+// openCell open specified Game's cell
+func (g *Game) openCell(h, w int) (bool, error) {
 	c := g.cells[h][w]
 	if c.isOpen {
 		return false, nil

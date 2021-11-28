@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type direction int
@@ -127,7 +129,18 @@ type Command struct {
 // NewGame は minesweeper の ゲームを生成します
 // - Vertical    cell's size is h (index is 0~h-1)
 // - Horizontal  cell's size is w (index is 0~w-1)
-func NewGame(h, w, bobNum int, writter io.Writer) Game {
+func NewGame(h, w, bobNum int, writter io.Writer) (Game, error) {
+	if err := validation.Validate(h, validation.Required, validation.Max(30).Error("height < 30")); err != nil {
+		return Game{}, err
+	}
+	if err := validation.Validate(w, validation.Required, validation.Max(30).Error("weight < 30")); err != nil {
+		return Game{}, err
+	}
+	maxBombNum := h*w - 1
+	if err := validation.Validate(bobNum, validation.Required, validation.Max(maxBombNum).Error(fmt.Sprintf("weight < %d", maxBombNum))); err != nil {
+		return Game{}, err
+	}
+
 	// generate cells
 	cells := make([][]cell, h)
 	for i := 0; i < len(cells); i++ {
@@ -140,7 +153,7 @@ func NewGame(h, w, bobNum int, writter io.Writer) Game {
 		writer:        bufio.NewWriter(writter),
 	}
 	g.setBomb(h, w, bobNum)
-	return g
+	return g, nil
 }
 
 // Game は minesweeper のゲームを表します

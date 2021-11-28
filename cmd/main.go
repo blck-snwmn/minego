@@ -10,8 +10,10 @@ import (
 func main() {
 	var h, w, bombNum int
 	fmt.Scan(&h, &w, &bombNum)
-	game := minego.NewGame(h, w, bombNum, os.Stdout)
-
+	game, err := minego.NewGame(h, w, bombNum, os.Stdout)
+	if err != nil {
+		panic(err.Error())
+	}
 	var ctype string
 	var ih, iw int
 

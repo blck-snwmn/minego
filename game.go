@@ -152,7 +152,6 @@ func NewGame(h, w, bobNum int, writter io.Writer) (Game, error) {
 		bombNum:       bobNum,
 		writer:        bufio.NewWriter(writter),
 	}
-	g.setBomb()
 	return g, nil
 }
 
@@ -162,6 +161,7 @@ type Game struct {
 	closedCellNum int
 	setFlagNum    int
 	bombNum       int
+	doneSetBomb   bool
 
 	writer *bufio.Writer
 }
@@ -222,6 +222,10 @@ func (g *Game) openCell(h, w int) (bool, error) {
 		g.open(h, w)
 		return true, nil
 	}
+	if !g.doneSetBomb {
+		g.setBomb(h, w)
+		g.doneSetBomb = true
+	}
 	g.openAdjacentCells(h, w)
 
 	return false, nil
@@ -236,7 +240,7 @@ func (g *Game) Ends() bool {
 	return g.closedCellNum == g.bombNum
 }
 
-func (g *Game) setBomb() {
+func (g *Game) setBomb(h, w int) {
 	// set bomb
 	rand.Seed(time.Now().UnixNano())
 	// FIXME: loop never ends if  w*h < bomb
@@ -247,6 +251,10 @@ func (g *Game) setBomb() {
 		hb := rand.Intn(sizeH)
 		wb := rand.Intn(sizeW)
 		if g.cells[hb][wb].hasBomb {
+			continue
+		}
+		// 入力された座標と同一の場所には爆弾を置かない
+		if hb == h && wb == w {
 			continue
 		}
 		g.cells[hb][wb].hasBomb = true

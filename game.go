@@ -301,7 +301,7 @@ func (g *Game) openAdjacentCells(h, w int) {
 }
 
 func (g *Game) isInGameArea(h, w int) bool {
-	return h >= 0 && w >= 0 && h < len(g.cells) && w < len(g.cells[0])
+	return h >= 0 && w >= 0 && h < g.height() && w < g.weight()
 }
 
 func (g *Game) setFlag(h, w int) {
@@ -320,4 +320,12 @@ func (g *Game) removeFlag(h, w int) {
 	if c.hasBomb {
 		g.setFlagNum--
 	}
+}
+
+func (g *Game) height() int {
+	return len(g.cells)
+}
+
+func (g *Game) weight() int {
+	return len(g.cells[0])
 }

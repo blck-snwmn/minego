@@ -152,7 +152,7 @@ func NewGame(h, w, bobNum int, writter io.Writer) (Game, error) {
 		bombNum:       bobNum,
 		writer:        bufio.NewWriter(writter),
 	}
-	g.setBomb(h, w, bobNum)
+	g.setBomb(bobNum)
 	return g, nil
 }
 
@@ -236,10 +236,12 @@ func (g *Game) Ends() bool {
 	return g.closedCellNum == g.bombNum
 }
 
-func (g *Game) setBomb(sizeH, sizeW, bobNum int) {
+func (g *Game) setBomb(bobNum int) {
 	// set bomb
 	rand.Seed(time.Now().UnixNano())
 	// FIXME: loop never ends if  w*h < bomb
+	sizeH, sizeW := g.height(), g.weight()
+
 	for setNum := 0; setNum != bobNum; {
 		hb := rand.Intn(sizeH)
 		wb := rand.Intn(sizeW)

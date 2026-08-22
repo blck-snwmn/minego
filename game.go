@@ -166,34 +166,54 @@ type Game struct {
 	writer *bufio.Writer
 }
 
-// Show show current game state
+// Show shows the current game state.
 func (g *Game) Show() {
 	// TODO buffering
 	headerCellLen := len(g.cells[0])
 	sep := strings.Repeat("=", (headerCellLen+1)*3)
-	g.writer.WriteString(sep)
-	g.writer.WriteString("\n")
+	if _, err := g.writer.WriteString(sep); err != nil {
+		return
+	}
+	if _, err := g.writer.WriteString("\n"); err != nil {
+		return
+	}
 	// fmt.Println(sep)
 
 	// header
-	g.writer.WriteString("   ")
+	if _, err := g.writer.WriteString("   "); err != nil {
+		return
+	}
 	for i := 0; i < headerCellLen; i++ {
-		g.writer.WriteString(fmt.Sprintf(" %02d", i))
+		if _, err := fmt.Fprintf(g.writer, " %02d", i); err != nil {
+			return
+		}
 	}
 
 	// rows
-	g.writer.WriteString("\n")
+	if _, err := g.writer.WriteString("\n"); err != nil {
+		return
+	}
 	for i, chs := range g.cells {
-		g.writer.WriteString(fmt.Sprintf(" %02d", i))
-		for _, c := range chs {
-			g.writer.WriteString(fmt.Sprintf("%3s", c))
+		if _, err := fmt.Fprintf(g.writer, " %02d", i); err != nil {
+			return
 		}
-		g.writer.WriteString("\n")
+		for _, c := range chs {
+			if _, err := fmt.Fprintf(g.writer, "%3s", c); err != nil {
+				return
+			}
+		}
+		if _, err := g.writer.WriteString("\n"); err != nil {
+			return
+		}
 	}
 
-	g.writer.WriteString(sep)
-	g.writer.WriteString("\n")
-	g.writer.Flush()
+	if _, err := g.writer.WriteString(sep); err != nil {
+		return
+	}
+	if _, err := g.writer.WriteString("\n"); err != nil {
+		return
+	}
+	_ = g.writer.Flush()
 }
 
 // Do は minesweeper を １サイクルすすめる
@@ -242,14 +262,14 @@ func (g *Game) Ends() bool {
 
 func (g *Game) setBomb(h, w int) {
 	// set bomb
-	rand.Seed(time.Now().UnixNano())
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	// FIXME: loop never ends if  w*h < bomb
 	sizeH, sizeW := g.height(), g.weight()
 	bobNum := g.bombNum
 
 	for setNum := 0; setNum != bobNum; {
-		hb := rand.Intn(sizeH)
-		wb := rand.Intn(sizeW)
+		hb := rng.Intn(sizeH)
+		wb := rng.Intn(sizeW)
 		if g.cells[hb][wb].hasBomb {
 			continue
 		}
@@ -275,8 +295,6 @@ func (g *Game) incrementBomb(h, w int) {
 		g.cells[h][w].bomb++
 	}
 }
-
-func (g *Game) hasBomb(h, w int) bool { return g.cells[h][w].hasBomb }
 
 func (g *Game) open(h, w int) {
 	c := g.cells[h][w]

@@ -9,7 +9,10 @@ import (
 
 func main() {
 	var h, w, bombNum int
-	fmt.Scan(&h, &w, &bombNum)
+	if _, err := fmt.Scan(&h, &w, &bombNum); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return
+	}
 	game, err := minego.NewGame(h, w, bombNum, os.Stdout)
 	if err != nil {
 		panic(err.Error())

@@ -166,34 +166,34 @@ type Game struct {
 	writer *bufio.Writer
 }
 
-// Show show current game state
+// Show shows the current game state.
 func (g *Game) Show() {
 	// TODO buffering
 	headerCellLen := len(g.cells[0])
 	sep := strings.Repeat("=", (headerCellLen+1)*3)
-	g.writer.WriteString(sep)
-	g.writer.WriteString("\n")
+	_, _ = g.writer.WriteString(sep)
+	_, _ = g.writer.WriteString("\n")
 	// fmt.Println(sep)
 
 	// header
-	g.writer.WriteString("   ")
+	_, _ = g.writer.WriteString("   ")
 	for i := 0; i < headerCellLen; i++ {
-		g.writer.WriteString(fmt.Sprintf(" %02d", i))
+		_, _ = fmt.Fprintf(g.writer, " %02d", i)
 	}
 
 	// rows
-	g.writer.WriteString("\n")
+	_, _ = g.writer.WriteString("\n")
 	for i, chs := range g.cells {
-		g.writer.WriteString(fmt.Sprintf(" %02d", i))
+		_, _ = fmt.Fprintf(g.writer, " %02d", i)
 		for _, c := range chs {
-			g.writer.WriteString(fmt.Sprintf("%3s", c))
+			_, _ = fmt.Fprintf(g.writer, "%3s", c)
 		}
-		g.writer.WriteString("\n")
+		_, _ = g.writer.WriteString("\n")
 	}
 
-	g.writer.WriteString(sep)
-	g.writer.WriteString("\n")
-	g.writer.Flush()
+	_, _ = g.writer.WriteString(sep)
+	_, _ = g.writer.WriteString("\n")
+	_ = g.writer.Flush()
 }
 
 // Do は minesweeper を １サイクルすすめる
@@ -242,14 +242,14 @@ func (g *Game) Ends() bool {
 
 func (g *Game) setBomb(h, w int) {
 	// set bomb
-	rand.Seed(time.Now().UnixNano())
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	// FIXME: loop never ends if  w*h < bomb
 	sizeH, sizeW := g.height(), g.weight()
 	bobNum := g.bombNum
 
 	for setNum := 0; setNum != bobNum; {
-		hb := rand.Intn(sizeH)
-		wb := rand.Intn(sizeW)
+		hb := rng.Intn(sizeH)
+		wb := rng.Intn(sizeW)
 		if g.cells[hb][wb].hasBomb {
 			continue
 		}
@@ -275,8 +275,6 @@ func (g *Game) incrementBomb(h, w int) {
 		g.cells[h][w].bomb++
 	}
 }
-
-func (g *Game) hasBomb(h, w int) bool { return g.cells[h][w].hasBomb }
 
 func (g *Game) open(h, w int) {
 	c := g.cells[h][w]

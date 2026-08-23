@@ -171,48 +171,28 @@ func (g *Game) Show() {
 	// TODO buffering
 	headerCellLen := len(g.cells[0])
 	sep := strings.Repeat("=", (headerCellLen+1)*3)
-	if _, err := g.writer.WriteString(sep); err != nil {
-		return
-	}
-	if _, err := g.writer.WriteString("\n"); err != nil {
-		return
-	}
+	_, _ = g.writer.WriteString(sep)
+	_, _ = g.writer.WriteString("\n")
 	// fmt.Println(sep)
 
 	// header
-	if _, err := g.writer.WriteString("   "); err != nil {
-		return
-	}
+	_, _ = g.writer.WriteString("   ")
 	for i := 0; i < headerCellLen; i++ {
-		if _, err := fmt.Fprintf(g.writer, " %02d", i); err != nil {
-			return
-		}
+		_, _ = fmt.Fprintf(g.writer, " %02d", i)
 	}
 
 	// rows
-	if _, err := g.writer.WriteString("\n"); err != nil {
-		return
-	}
+	_, _ = g.writer.WriteString("\n")
 	for i, chs := range g.cells {
-		if _, err := fmt.Fprintf(g.writer, " %02d", i); err != nil {
-			return
-		}
+		_, _ = fmt.Fprintf(g.writer, " %02d", i)
 		for _, c := range chs {
-			if _, err := fmt.Fprintf(g.writer, "%3s", c); err != nil {
-				return
-			}
+			_, _ = fmt.Fprintf(g.writer, "%3s", c)
 		}
-		if _, err := g.writer.WriteString("\n"); err != nil {
-			return
-		}
+		_, _ = g.writer.WriteString("\n")
 	}
 
-	if _, err := g.writer.WriteString(sep); err != nil {
-		return
-	}
-	if _, err := g.writer.WriteString("\n"); err != nil {
-		return
-	}
+	_, _ = g.writer.WriteString(sep)
+	_, _ = g.writer.WriteString("\n")
 	_ = g.writer.Flush()
 }
 

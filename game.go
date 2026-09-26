@@ -143,7 +143,7 @@ func NewGame(h, w, bobNum int, writter io.Writer) (Game, error) {
 
 	// generate cells
 	cells := make([][]cell, h)
-	for i := 0; i < len(cells); i++ {
+	for i := range cells {
 		cells[i] = make([]cell, w)
 	}
 	g := Game{
@@ -177,7 +177,7 @@ func (g *Game) Show() {
 
 	// header
 	_, _ = g.writer.WriteString("   ")
-	for i := 0; i < headerCellLen; i++ {
+	for i := range headerCellLen {
 		_, _ = fmt.Fprintf(g.writer, " %02d", i)
 	}
 

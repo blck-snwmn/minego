@@ -1,6 +1,6 @@
 module github.com/blck-snwmn/minego
 
-go 1.20
+go 1.27.0
 
 require github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 
